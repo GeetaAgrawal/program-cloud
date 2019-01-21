@@ -1,0 +1,68 @@
+
+
+
+mysql> create database Trigdb; 
+Query OK, 1 row affected (0.00 sec) 
+
+mysql> create table amount_tbl(id int,Name varchar(20),Amount decimal(10,2)); 
+Query OK, 0 rows affected (0.09 sec) 
+
+mysql> insert into table balance_tbl(111,"Man",1000); 
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'table balance_tbl(111,"Man",1000)' at line 1 
+mysql> insert into balance_tbl values(111,"Man",1000); 
+ERROR 1054 (42S22): Unknown column 'sum' in 'field list' 
+mysql> insert into amount_tbl values(111,"Man",1000); 
+Query OK, 1 row affected (0.05 sec) 
+
+mysql> insert into amount_tbl values(112,"Van",2000); 
+Query OK, 1 row affected (0.04 sec) 
+
+mysql> insert into amount_tbl values(113,"Can",3000); 
+Query OK, 1 row affected (0.07 sec) 
+
+mysql> select * from amount_tbl; 
++------+------+---------+ 
+| id   | Name | Amount  | 
++------+------+---------+ 
+|  111 | Man  | 1000.00 | 
+|  112 | Van  | 2000.00 | 
+|  113 | Can  | 3000.00 | 
++------+------+---------+ 
+3 rows in set (0.00 sec) 
+
+mysql> create Tigger Add Before Insert on amount_tbl for each row set @total=@total+NEW.amount; 
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'Tigger Add Before Insert on amount_tbl for each row set @total=@total+NEW.amount' at line 1 
+mysql> create Tigger Add Before Insert on amount_tbl for each row set @total=@total+NEW.Amount; 
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'Tigger Add Before Insert on amount_tbl for each row set @total=@total+NEW.Amount' at line 1 
+mysql> create Tigger Added Before Insert on amount_tbl for each row set @total=@total+NEW.Amount; 
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'Tigger Added Before Insert on amount_tbl for each row set @total=@total+NEW.Amou' at line 1 
+mysql> create TRIGGER Added Before Insert on amount_tbl 
+    -> for each row set @sum=@sum+NEW.Amount; 
+Query OK, 0 rows affected (0.08 sec) 
+
+mysql> set @sum=100; 
+Query OK, 0 rows affected (0.00 sec) 
+
+mysql> insert into amount_tbl values(114,"Pan",4000); 
+Query OK, 1 row affected (0.03 sec) 
+
+mysql> select * from amount_tbl; 
++------+------+---------+ 
+| id   | Name | Amount  | 
++------+------+---------+ 
+|  111 | Man  | 1000.00 | 
+|  112 | Van  | 2000.00 | 
+|  113 | Can  | 3000.00 | 
+|  114 | Pan  | 4000.00 | 
++------+------+---------+ 
+4 rows in set (0.00 sec) 
+
+mysql> select @sum NEW_Table; 
++-----------+ 
+| NEW_Table | 
++-----------+ 
+|   4100.00 | 
++-----------+ 
+1 row in set (0.00 sec) 
+
+mysql> select @sum NEW_Table; 
